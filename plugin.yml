@@ -1,0 +1,5 @@
+name: ImageParticle
+main: skymin\ImageParticle\Loader
+api: 4.0.0
+version: 1.0.0-dev
+author: skymin
