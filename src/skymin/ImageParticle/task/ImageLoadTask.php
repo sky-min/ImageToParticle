@@ -62,7 +62,7 @@ final class ImageLoadTask extends AsyncTask{
 	public function onRun() : void{
 		$list = igbinary_unserialize($this->list);
 		$count = count($list);
-		if($count < 0) return;
+		if($count < 1) return;
 		$this->logger->notice("Trying to load {$count} images.");
 		$this->count = $count;
 		unset($count);
