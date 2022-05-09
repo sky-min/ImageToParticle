@@ -3,14 +3,17 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle\task;
 
-use skymin\ImageParticle\Loader;
 use skymin\ImageParticle\ImageParticle;
+use skymin\ImageParticle\ImageParticleAPI;
 
 use pocketmine\Server;
 use pocketmine\scheduler\AsyncTask;
 
+use PrefixedLogger;
+
 use function file_exists;
 use function intdiv;
+use function count;
 
 use function imagecolorat;
 use function imagecreatefrompng;
@@ -19,14 +22,22 @@ use function imagesy;
 
 final class ImageLoadTask extends AsyncTask{
 
+	private int $count;
+
 	public function __construct(
 		private array $list,
 		private string $path
-	){}
+	){
+		$this->logger = new PrefixedLogger(Server::getInstance()->getLogger(), 'ImageParticle');
+	}
 
 	public function onRun() : void{
 		$list = (array) $this->list;
-		if($list === []) return;
+		$count = count($list);
+		if($count < 0) return;
+		$this->logger->notice("Trying to load {$count} images.");
+		$this->count = $count;
+		unset($count);
 		$path = $this->path;
 		$result = [];
 		foreach($list as $name){
@@ -65,7 +76,10 @@ final class ImageLoadTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		Loader::$particles = $this->getResult();
+		$result = $this->getResult();
+		$count = count($result);
+		$this->logger->notice("{$count} of {$this->count} images loaded.");
+		ImageParticleAPI::getInstance()->setParticles($result);
 	}
 
 }

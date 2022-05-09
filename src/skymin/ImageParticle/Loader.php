@@ -27,7 +27,6 @@ final class Loader extends PluginBase{
 		while(!$async->isFinished()){
 			usleep(500);
 		}
-		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 	}
 
 }
