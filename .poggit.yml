@@ -1,0 +1,10 @@
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/sky-min/ImageToParticle
+branches:
+- master
+projects:
+  ImageToParticle:
+    path: ""
+    lib:
+      - src: sky-min/DataConfig/Data
+        version: ^2.2.1
+...
