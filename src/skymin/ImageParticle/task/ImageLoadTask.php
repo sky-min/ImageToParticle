@@ -35,6 +35,7 @@ use PrefixedLogger;
 
 use function intdiv;
 use function count;
+use function is_array;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
@@ -105,6 +106,7 @@ final class ImageLoadTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		$result = $this->getResult();
+		if(!is_array($result)) return;
 		$count = count($result);
 		$this->logger->notice("{$count} of {$this->count} images loaded.");
 		ImageParticleAPI::getInstance()->setParticles($result);
