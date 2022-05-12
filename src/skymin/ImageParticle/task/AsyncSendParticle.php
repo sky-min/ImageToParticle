@@ -64,10 +64,10 @@ final class AsyncSendParticle extends AsyncTask{
 	public function onCompletion() : void{
 		$world = $this->fetchLocal('world');
 		if(!$world->isLoaded()) return;
+		$center = igbinary_unserialize($this->center);
 		$target = $world->getViewersForPosition($center);
 		if(count($target) < 1) return;
 		$particles = $this->getResult();
-		$center = igbinary_unserialize($this->center);
 		Server::getInstance()->broadcastPackets($target, $particles);
 	}
 
