@@ -62,7 +62,7 @@ final class ImageParticle{
 		$psin = sin($pitch);
 		$pcos = cos($pitch);
 		foreach($this->particles as $key => $data){
-		  $p_count++;
+			$p_count++;
 			if($p_count === 1){
 				$dx = $data['p'][0] * $unit;
 				$dy = $data['p'][1] * $unit;
