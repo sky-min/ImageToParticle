@@ -27,27 +27,33 @@ namespace skymin\ImageParticle;
 
 use skymin\ImageParticle\ImageParticle;
 use skymin\ImageParticle\task\ImageLoadTask;
+use skymin\ImageParticle\command\ImageParticleCmd;
 
 use pocketmine\plugin\PluginBase;
 
 use skymin\data\Data;
 
+use function mkdir;
+use function is_dir;
+use function usleep;
+
 final class Loader extends PluginBase{
 
-	public static array $particles = [];
-
 	protected function onEnable() : void{
-		$imgPath = $this->getDataFolder() . '/image/';
+		$folder = $this->getDataFolder();
+		$imgPath = $folder . '/image/';
 		if(!is_dir($imgPath)){
 			mkdir($imgPath);
 		}
 		$async = new ImageLoadTask(
-			(new Data($this->getDataFolder() . 'Images.txt', Data::LIST))->getAll(),
+			(new Data($folder . 'Images.txt', Data::LIST))->getAll(),
 			$imgPath
 		);
-		$this->getServer()->getAsyncPool()->submitTask($async);
+		$server = $this->getServer();
+		$server->getAsyncPool()->submitTask($async);
+		$server->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
 		while(!$async->isFinished()){
-			usleep(500);
+			usleep(250);
 		}
 	}
 
