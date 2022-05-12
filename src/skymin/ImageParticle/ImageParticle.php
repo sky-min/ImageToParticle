@@ -28,12 +28,14 @@ namespace skymin\ImageParticle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
+
+use function intdiv;
+use function sin;
+use function cos;
+use function deg2rad;
 
 final class ImageParticle{
-
-	public const LOOK_X = 0;
-	public const LOOK_Y = 1;
-	public const LOOK_Z = 2;
 
 	public function __construct(
 		private string $name,
@@ -44,66 +46,45 @@ final class ImageParticle{
 		return $this->name;
 	}
 
-	public function encode(Vector3 $center, int $count = 4, float $unit = 0.05, int $look = self::LOOK_Y) : array{
+	public function encode(Vector3 $center, float $yaw = 0.0, float $pitch = 0.0, int $count = 4, float $unit = 0.1) : array{
+		if($count < 1){
+			$count = 4;
+		}
+		if($unit <= 0){
+			$unit = 0.1;
+		}
 		$pks = [];
-		$cx = $center->x;
-		$cy = $center->y;
-		$cz = $center->z;
 		$p_count = 0;
-		if($look === self::LOOK_X){
-			foreach($this->particles as $key => $data){
-				if($p_count++ === 1){
-					$pks[] = $this->pk(
-						new Vector3(
-							$cx,
-							$cy + $data['p'][1] * $unit,
-							$cz + $data['p'][0] * $unit
-						), $data['c']
-					);
-					continue;
-				}
-				if($p_count === $count){
-					$p_count = 0;
-				}
+		$yaw = deg2rad($yaw);
+		$pitch = deg2rad($pitch);
+		$ysin = sin($yaw);
+		$ycos = cos($yaw);
+		$psin = sin($pitch);
+		$pcos = cos($pitch);
+		foreach($this->particles as $key => $data){
+		  $p_count++;
+			if($p_count === 1){
+				$dx = $data['p'][0] * $unit;
+				$dy = $data['p'][1] * $unit;
+				$pks[] = self::pk($center->add(
+					($dx * $ycos) + ($dy * $pcos),
+					($dy * $psin),
+					($dy * $pcos) + ($dx * $ysin),
+				), $data['c']);
 			}
-		}elseif($look === self::LOOK_Z){
-			foreach($this->particles as $key => $data){
-				if($p_count++ === 1){
-					$pks[] = $this->pk(
-						new Vector3(
-							$cx + $data['p'][0] * $unit,
-							$cy + $data['p'][1] * $unit,
-							$cz
-						), $data['c']
-					);
-					continue;
-				}
-				if($p_count === $count){
-					$p_count = 0;
-				}
-			}
-		}else{
-			foreach($this->particles as $key => $data){
-				if($p_count++ === 1){
-					$pks[] = $this->pk(
-						new Vector3(
-							$cx + $data['p'][0] * $unit,
-							$cy,
-							$cz + $data['p'][1] * $unit
-						), $data['c']
-					);
-					continue;
-				}
-				if($p_count === $count){
-					$p_count = 0;
-				}
+			if($p_count >= $count){
+				$p_count = 0;
 			}
 		}
 		return $pks;
 	}
 
-	private function pk(Vector3 $pos, int $color) : LevelEventPacket{
-		return LevelEventPacket::standardParticle(ParticleIds::DUST, $color, $pos);
+	private static function pk(Vector3 $pos, int $color) : LevelEventPacket{
+		$pk = new LevelEventPacket();
+		$pk->eventId = LevelEvent::ADD_PARTICLE_MASK|ParticleIds::DUST;
+		$pk->eventData = $color;
+		$pk->position = $pos;
+		return $pk;
 	}
 
 }

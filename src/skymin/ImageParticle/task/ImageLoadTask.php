@@ -86,8 +86,8 @@ final class ImageLoadTask extends AsyncTask{
 				$cy--;
 			}
 			$data = [];
-			for($x = 0; $x < $sx; $x++){
-				for($y = 0; $y < $sy; $y++){
+			for($y = 0; $y < $sy; $y++){
+				for($x = 0; $x < $sx; $x++){
 					$colorat = imagecolorat($img, $x, $y);
 					$a = ((~((int) ($colorat >> 24))) << 1) & 0xff;
 					if($a < 50){
