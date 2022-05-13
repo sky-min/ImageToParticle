@@ -28,6 +28,7 @@ namespace skymin\ImageParticle\command;
 use skymin\ImageParticle\Loader;
 use skymin\ImageParticle\ImageParticleAPI;
 
+use pocketmine\plugin\Plugin;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\scheduler\ClosureTask;
@@ -61,7 +62,7 @@ final class ImageParticleCmd extends Command{
 				new Input('count', '4', '', Input::TYPE_INT, true),
 				new Input('unit', '0.5', '', Input::TYPE_FLOAT, true)
 			],
-			function(Player $player, $data) use($pos, $posdefault): void{
+			function(Player $player, $data) use($pos, $posdefault) : void{
 				$newpos = $pos;
 				if($data[1] !== $posdefault){
 					$explode = explode(':', $data[1], 3);
@@ -81,7 +82,10 @@ final class ImageParticleCmd extends Command{
 				}), 4);
 			}
 		));
-		
+	}
+
+	public function getOwningPlugin() : Plugin{
+		return $this->loader;
 	}
 
 }
