@@ -28,10 +28,10 @@ namespace skymin\ImageParticle\command;
 use skymin\ImageParticle\Loader;
 use skymin\ImageParticle\ImageParticleAPI;
 
-use pocketmine\plugin\Plugin;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\plugin\PluginOwned;
 use pocketmine\command\{Command, CommandSender};
 
 use skymin\FormLib\CustomForm;
