@@ -28,10 +28,10 @@ namespace skymin\ImageParticle\command;
 use skymin\ImageParticle\Loader;
 use skymin\ImageParticle\ImageParticleAPI;
 
-use pocketmine\plugin\Plugin;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\plugin\{Plugin, PluginOwned};
 use pocketmine\command\{Command, CommandSender};
 
 use skymin\FormLib\CustomForm;
@@ -40,7 +40,7 @@ use skymin\FormLib\element\{Dropdown, Input, Slider};
 use function explode;
 use function is_numeric;
 
-final class ImageParticleCmd extends Command{
+final class ImageParticleCmd extends Command implements PluginOwned{
 
 	public function __construct(private Loader $loader){
 		parent::__construct('imageparticle', 'made by skymin', '/imageparticle', ['imgpar']);
