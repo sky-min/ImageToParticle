@@ -62,7 +62,7 @@ final class ImageParticleCmd extends Command{
 				new Input('count', '4', '', Input::TYPE_INT, true),
 				new Input('unit', '0.5', '', Input::TYPE_FLOAT, true)
 			],
-			function(Player $player, $data) use($pos, $posdefault): void{
+			function(Player $player, $data) use($pos, $posdefault) : void{
 				$newpos = $pos;
 				if($data[1] !== $posdefault){
 					$explode = explode(':', $data[1], 3);
@@ -84,7 +84,7 @@ final class ImageParticleCmd extends Command{
 		));
 	}
 
-	public function getOwningPlugin(): Plugin{
+	public function getOwningPlugin() : Plugin{
 		return $this->loader;
 	}
 
