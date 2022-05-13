@@ -28,6 +28,7 @@ namespace skymin\ImageParticle\command;
 use skymin\ImageParticle\Loader;
 use skymin\ImageParticle\ImageParticleAPI;
 
+use pocketmine\plugin\Plugin;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\scheduler\ClosureTask;
@@ -81,7 +82,10 @@ final class ImageParticleCmd extends Command{
 				}), 4);
 			}
 		));
-		
+	}
+
+	public function getOwningPlugin(): Plugin{
+		return $this->loader;
 	}
 
 }
