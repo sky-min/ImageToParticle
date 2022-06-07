@@ -66,10 +66,11 @@ final class ImageParticle{
 			if($p_count === 1){
 				$dx = $data['p'][0] * $unit;
 				$dy = $data['p'][1] * $unit;
+				$dz = $dy * $psin;
 				$pks[] = self::pk($center->add(
-					($dx * $ycos) + ($dy * $pcos),
-					($dy * $psin),
-					($dy * $pcos) + ($dx * $ysin),
+					$dx * $ycos + $dz * $ysin,
+					$dy * $pcos,
+					$dx * -$ysin + $dz * $ycos,
 				), $data['c']);
 			}
 			if($p_count >= $count){
