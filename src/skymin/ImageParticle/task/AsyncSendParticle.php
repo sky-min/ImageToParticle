@@ -25,11 +25,12 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle\task;
 
-use skymin\ImageParticle\ImageParticle;
 
 use pocketmine\Server;
-use pocketmine\world\Position;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\world\Position;
+
+use skymin\ImageParticle\ImageParticle;
 
 use function count;
 use function igbinary_serialize;

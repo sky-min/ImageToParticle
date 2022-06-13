@@ -1,5 +1,6 @@
 # Todo
 - [ ] roll (need help)
+- [ ] support more image formats
 
 # how to use
 1. this plugin load

@@ -28,12 +28,10 @@ namespace skymin\ImageParticle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
-use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-use function intdiv;
-use function sin;
 use function cos;
 use function deg2rad;
+use function sin;
 
 final class ImageParticle{
 
@@ -81,11 +79,7 @@ final class ImageParticle{
 	}
 
 	private static function pk(Vector3 $pos, int $color) : LevelEventPacket{
-		$pk = new LevelEventPacket();
-		$pk->eventId = LevelEvent::ADD_PARTICLE_MASK|ParticleIds::DUST;
-		$pk->eventData = $color;
-		$pk->position = $pos;
-		return $pk;
+		return LevelEventPacket::standardParticle(ParticleIds::DUST, $color, $pos);
 	}
 
 }
