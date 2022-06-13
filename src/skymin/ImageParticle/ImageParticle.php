@@ -81,11 +81,7 @@ final class ImageParticle{
 	}
 
 	private static function pk(Vector3 $pos, int $color) : LevelEventPacket{
-		$pk = new LevelEventPacket();
-		$pk->eventId = LevelEvent::ADD_PARTICLE_MASK|ParticleIds::DUST;
-		$pk->eventData = $color;
-		$pk->position = $pos;
-		return $pk;
+		return LevelEventPacket::standardParticle(ParticleIds::DUST, $color, $pos);
 	}
 
 }
