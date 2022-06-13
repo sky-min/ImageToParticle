@@ -43,7 +43,7 @@ final class ImageParticleAPI{
 	 */
 	private ?array $particles = null;
 
-	/** @var stringn[] */
+	/** @var string[] */
 	private array $list = [];
 
 	//Please don't use
