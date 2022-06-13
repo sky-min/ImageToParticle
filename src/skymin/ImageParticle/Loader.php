@@ -25,11 +25,11 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle;
 
-use skymin\ImageParticle\ImageParticle;
-use skymin\ImageParticle\task\ImageLoadTask;
-use skymin\ImageParticle\command\ImageParticleCmd;
-
 use pocketmine\plugin\PluginBase;
+use pocketmine\plugin\PluginException;
+
+use skymin\ImageParticle\command\ImageParticleCmd;
+use skymin\ImageParticle\task\ImageLoadTask;
 
 use skymin\data\Data;
 
@@ -39,9 +39,14 @@ use function usleep;
 
 final class Loader extends PluginBase{
 
+	private ImageParticleAPI $api;
+
 	protected function onEnable() : void{
+		if(!extension_loaded('gd')){
+			throw new PluginException("Missing GD library!");
+		}
 		$folder = $this->getDataFolder();
-		$imgPath = $folder . '/image/';
+		$imgPath = $folder . 'image/';
 		if(!is_dir($imgPath)){
 			mkdir($imgPath);
 		}
@@ -52,9 +57,14 @@ final class Loader extends PluginBase{
 		$server = $this->getServer();
 		$server->getAsyncPool()->submitTask($async);
 		$server->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
+		$this->api = ImageParticleAPI::getInstance();
 		while(!$async->isFinished()){
 			usleep(250);
 		}
+	}
+
+	public function getApi() : ImageParticleAPI{
+		return $this->api;
 	}
 
 }

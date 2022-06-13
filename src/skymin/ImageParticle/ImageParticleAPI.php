@@ -25,17 +25,14 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle;
 
-use skymin\ImageParticle\task\AsyncSendParticle;
-
+use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\Position;
-use pocketmine\Server;
-use pocketmine\network\mcpe\compression\ZlibCompressor;
-use pocketmine\network\mcpe\protocol\serializer\{PacketSerializerContext, PacketBatch};
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 
-use function count;
+use skymin\ImageParticle\task\AsyncSendParticle;
+
 use function array_keys;
+use function count;
 
 final class ImageParticleAPI{
 	use SingletonTrait;
@@ -46,9 +43,10 @@ final class ImageParticleAPI{
 	 */
 	private ?array $particles = null;
 
+	/** @var stringn[] */
 	private array $list = [];
 
-	//Please don't unsing
+	//Please don't use
 	public function setParticles(array $particles) : void{
 		if($this->particles === null){
 			$this->particles = $particles;
@@ -57,11 +55,7 @@ final class ImageParticleAPI{
 	}
 
 	public function getParticle(string $name) : ?ImageParticle{
-		$particles = $this->particles;
-		if(!isset($particles[$name])){
-			return null;
-		}
-		return $particles[$name];
+		return $this->particles[$name] ?? null;
 	}
 
 	public function getParticleList() : array{
@@ -70,14 +64,18 @@ final class ImageParticleAPI{
 
 	public function sendParticle(string $name, Position $center, float $yaw = 0.0, float $pitch = 0.0, int $count = 4, float $unit = 0.5, bool $asyncEncode = true) : void{
 		$particle = $this->getParticle($name);
-		if($particle === null) return;
+		if($particle === null) {
+			return;
+		}
 		if($asyncEncode){
 			Server::getInstance()->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $yaw, $pitch, $count, $unit));
 			return;
 		}
 		$vec = $center->asVector3();
 		$target = $center->world->getViewersForPosition($vec);
-		if(count($target) < 1) return;
+		if(count($target) < 1) {
+			return;
+		}
 		Server::getInstance()->broadcastPackets($target, $particle->encode($vec, $yaw, $pitch, $count, $unit));
 	}
 

@@ -25,24 +25,31 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle\task;
 
-use skymin\ImageParticle\ImageParticle;
-use skymin\ImageParticle\ImageParticleAPI;
 
 use pocketmine\Server;
 use pocketmine\scheduler\AsyncTask;
-
 use PrefixedLogger;
 
-use function intdiv;
+use skymin\ImageParticle\ImageParticle;
+use skymin\ImageParticle\ImageParticleAPI;
+
 use function count;
+use function intdiv;
+use function explode;
 use function is_array;
+use function rtrim;
+use function strtolower;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
-use function imagecolorat;
-use function imagecreatefrompng;
 use function imagesx;
 use function imagesy;
+use function imagecolorat;
+use function imagecreatefrompng;
+use function imagecreatefromtga;
+use function imagecreatefrombmp;
+use function imagecreatefromjpeg;
+use function imagecreatefromwebp;
 
 final class ImageLoadTask extends AsyncTask{
 
@@ -63,15 +70,32 @@ final class ImageLoadTask extends AsyncTask{
 	public function onRun() : void{
 		$list = igbinary_unserialize($this->list);
 		$count = count($list);
-		if($count < 1) return;
+		if($count < 1) {
+			return;
+		}
 		$this->logger->notice("Trying to load {$count} images.");
 		$this->count = $count;
-		unset($count);
 		$path = $this->path;
 		$result = [];
-		foreach($list as $name){
-			$file = $path . $name . '.png';
-			$img = imagecreatefrompng($file);
+		foreach($list as $fileName){
+			$realFile = $path . $fileName;
+			$explode = explode('.', $fileName);
+			$excount = count($explode);
+			if($excount < 2){
+				$explode[] = 'png';
+				$realFile .= '.png';
+			}else{
+				$excount--;
+			}
+			$extension = $explode[$excount];
+			$img = match(strtolower($extension)){
+				'png' => imagecreatefrompng($realFile),
+				'jpg', 'jpeg' => imagecreatefromjpeg($realFile),
+				'webp' => imagecreatefromwebp($realFile),
+				'tga' => imagecreatefromtga($realFile),
+				'bmp' => imagecreatefrombmp($realFile),
+				default => false
+			};
 			if($img === false){
 				continue;
 			}
@@ -99,6 +123,7 @@ final class ImageLoadTask extends AsyncTask{
 					];
 				}
 			}
+			$name = rtrim($fileName, '.' . $extension);
 			$result[$name] = new ImageParticle($name, $data);
 		}
 		$this->setResult($result);
