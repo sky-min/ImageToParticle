@@ -25,19 +25,19 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle\task;
 
-use skymin\ImageParticle\ImageParticle;
-use skymin\ImageParticle\ImageParticleAPI;
 
 use pocketmine\Server;
 use pocketmine\scheduler\AsyncTask;
-
 use PrefixedLogger;
 
-use function intdiv;
+use skymin\ImageParticle\ImageParticle;
+use skymin\ImageParticle\ImageParticleAPI;
+
 use function count;
-use function is_array;
 use function igbinary_serialize;
 use function igbinary_unserialize;
+use function intdiv;
+use function is_array;
 
 use function imagecolorat;
 use function imagecreatefrompng;

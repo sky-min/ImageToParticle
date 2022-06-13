@@ -25,17 +25,14 @@ declare(strict_types = 1);
 
 namespace skymin\ImageParticle;
 
-use skymin\ImageParticle\task\AsyncSendParticle;
-
+use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\Position;
-use pocketmine\Server;
-use pocketmine\network\mcpe\compression\ZlibCompressor;
-use pocketmine\network\mcpe\protocol\serializer\{PacketSerializerContext, PacketBatch};
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 
-use function count;
+use skymin\ImageParticle\task\AsyncSendParticle;
+
 use function array_keys;
+use function count;
 
 final class ImageParticleAPI{
 	use SingletonTrait;
@@ -48,7 +45,7 @@ final class ImageParticleAPI{
 
 	private array $list = [];
 
-	//Please don't unsing
+	//Please don't use
 	public function setParticles(array $particles) : void{
 		if($this->particles === null){
 			$this->particles = $particles;

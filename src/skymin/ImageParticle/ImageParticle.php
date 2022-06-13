@@ -28,12 +28,10 @@ namespace skymin\ImageParticle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
-use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-use function intdiv;
-use function sin;
 use function cos;
 use function deg2rad;
+use function sin;
 
 final class ImageParticle{
 
