@@ -57,11 +57,7 @@ final class ImageParticleAPI{
 	}
 
 	public function getParticle(string $name) : ?ImageParticle{
-		$particles = $this->particles;
-		if(!isset($particles[$name])){
-			return null;
-		}
-		return $particles[$name];
+		return $this->particles[$name] ?? null;
 	}
 
 	public function getParticleList() : array{
@@ -70,14 +66,18 @@ final class ImageParticleAPI{
 
 	public function sendParticle(string $name, Position $center, float $yaw = 0.0, float $pitch = 0.0, int $count = 4, float $unit = 0.5, bool $asyncEncode = true) : void{
 		$particle = $this->getParticle($name);
-		if($particle === null) return;
+		if($particle === null) {
+			return;
+		}
 		if($asyncEncode){
 			Server::getInstance()->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $yaw, $pitch, $count, $unit));
 			return;
 		}
 		$vec = $center->asVector3();
 		$target = $center->world->getViewersForPosition($vec);
-		if(count($target) < 1) return;
+		if(count($target) < 1) {
+			return;
+		}
 		Server::getInstance()->broadcastPackets($target, $particle->encode($vec, $yaw, $pitch, $count, $unit));
 	}
 

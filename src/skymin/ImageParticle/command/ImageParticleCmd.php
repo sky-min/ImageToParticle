@@ -35,7 +35,7 @@ use pocketmine\plugin\{Plugin, PluginOwned};
 use pocketmine\command\{Command, CommandSender};
 
 use skymin\FormLib\CustomForm;
-use skymin\FormLib\element\{Dropdown, Input, Slider};
+use skymin\FormLib\element\{Dropdown, Input};
 
 use function explode;
 use function is_numeric;
@@ -48,8 +48,9 @@ final class ImageParticleCmd extends Command implements PluginOwned{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : void{
-		if(!$this->testPermission($sender)) return;
-		if(!$sender instanceof Player) return;
+		if(!$sender instanceof Player || !$this->testPermission($sender)) {
+			return;
+		}
 		$pos = $sender->getPosition();
 		$posdefault = "{$pos->x}:{$pos->y}:{$pos->z}";
 		$sender->sendForm(new CustomForm(
@@ -67,12 +68,7 @@ final class ImageParticleCmd extends Command implements PluginOwned{
 				if($data[1] !== $posdefault){
 					$explode = explode(':', $data[1], 3);
 					if(
-						isset($explode[0])
-						&& isset($explode[1])
-						&& isset($explode[2])
-						&& is_numeric($explode[0])
-						&& is_numeric($explode[1])
-						&& is_numeric($explode[2])
+						isset($explode[0], $explode[1], $explode[2]) && is_numeric($explode[0]) && is_numeric($explode[1]) && is_numeric($explode[2])
 					){
 						$newpos = new Position((float) $explode[0], (float) $explode[1], (float) $explode[2], $pos->world);
 					}
