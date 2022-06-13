@@ -1,8 +1,7 @@
 # Todo
 - [ ] roll (need help)
 - [ ] support more image formats
-- [ ] gif?
-- [ ] animation?
+
 # how to use
 1. this plugin load
 2. png file put at plugin_data/ImageParticle/image/
