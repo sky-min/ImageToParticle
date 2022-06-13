@@ -45,7 +45,7 @@ final class Loader extends PluginBase{
 		}
 		$this->api = ImageParticleAPI::getInstance();
 		$folder = $this->getDataFolder();
-		$imgPath = $folder . '/image/';
+		$imgPath = $folder . 'image/';
 		if(!is_dir($imgPath)){
 			mkdir($imgPath);
 		}

@@ -1,6 +1,6 @@
 # Todo
 - [ ] roll (need help)
-- [ ] support more image formats
+- [ ] yaw pitch equal to entity yaw pitch
 
 # how to use
 1. this plugin load

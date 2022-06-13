@@ -34,15 +34,20 @@ use skymin\ImageParticle\ImageParticle;
 use skymin\ImageParticle\ImageParticleAPI;
 
 use function count;
+use function intdiv;
+use function explode;
+use function is_array;
+use function rtrim;
+use function strtolower;
 use function igbinary_serialize;
 use function igbinary_unserialize;
-use function intdiv;
-use function is_array;
 
-use function imagecolorat;
-use function imagecreatefrompng;
 use function imagesx;
 use function imagesy;
+use function imagecolorat;
+use function imagecreatefrompng;
+use function imagecreatefromjpeg;
+use function imagecreatefromwebp;
 
 final class ImageLoadTask extends AsyncTask{
 
@@ -68,12 +73,25 @@ final class ImageLoadTask extends AsyncTask{
 		}
 		$this->logger->notice("Trying to load {$count} images.");
 		$this->count = $count;
-		unset($count);
 		$path = $this->path;
 		$result = [];
-		foreach($list as $name){
-			$file = $path . $name . '.png';
-			$img = imagecreatefrompng($file);
+		foreach($list as $fileName){
+			$realFile = $path . $fileName;
+			$explode = explode('.', $fileName);
+			$excount = count($explode);
+			if($excount < 2){
+				$explode[] = 'png';
+				$realFile .= '.png';
+			}else{
+				$excount--;
+			}
+			$extension = $explode[$excount];
+			$img = match(strtolower($extension)){
+				'png' => imagecreatefrompng($realFile),
+				'jpeg' => imagecreatefromjpeg($realFile),
+				'webp' => imagecreatefromwebp($realFile),
+				default => false
+			};
 			if($img === false){
 				continue;
 			}
@@ -101,6 +119,7 @@ final class ImageLoadTask extends AsyncTask{
 					];
 				}
 			}
+			$name = rtrim($fileName, '.' . $extension);
 			$result[$name] = new ImageParticle($name, $data);
 		}
 		$this->setResult($result);
