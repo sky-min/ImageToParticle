@@ -46,6 +46,8 @@ use function imagesx;
 use function imagesy;
 use function imagecolorat;
 use function imagecreatefrompng;
+use function imagecreatefromtga;
+use function imagecreatefrombmp;
 use function imagecreatefromjpeg;
 use function imagecreatefromwebp;
 
@@ -88,8 +90,10 @@ final class ImageLoadTask extends AsyncTask{
 			$extension = $explode[$excount];
 			$img = match(strtolower($extension)){
 				'png' => imagecreatefrompng($realFile),
-				'jpeg' => imagecreatefromjpeg($realFile),
+				'jpg', 'jpeg' => imagecreatefromjpeg($realFile),
 				'webp' => imagecreatefromwebp($realFile),
+				'tga' => imagecreatefromtga($realFile),
+				'bmp' => imagecreatefrombmp($realFile),
 				default => false
 			};
 			if($img === false){

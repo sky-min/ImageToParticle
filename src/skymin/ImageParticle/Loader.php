@@ -38,12 +38,13 @@ use function is_dir;
 use function usleep;
 
 final class Loader extends PluginBase{
-	protected ImageParticleAPI $api;
+
+	private ImageParticleAPI $api;
+
 	protected function onEnable() : void{
 		if(!extension_loaded('gd')){
 			throw new PluginException("Missing GD library!");
 		}
-		$this->api = ImageParticleAPI::getInstance();
 		$folder = $this->getDataFolder();
 		$imgPath = $folder . 'image/';
 		if(!is_dir($imgPath)){
@@ -56,14 +57,12 @@ final class Loader extends PluginBase{
 		$server = $this->getServer();
 		$server->getAsyncPool()->submitTask($async);
 		$server->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
+		$this->api = ImageParticleAPI::getInstance();
 		while(!$async->isFinished()){
 			usleep(250);
 		}
 	}
 
-	/**
-	 * @return ImageParticleAPI
-	 */
 	public function getApi() : ImageParticleAPI{
 		return $this->api;
 	}
