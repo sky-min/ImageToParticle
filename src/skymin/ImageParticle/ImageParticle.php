@@ -66,9 +66,9 @@ final class ImageParticle{
 				$dy = $data['p'][1] * $unit;
 				$dz = $dy * $psin;
 				$pks[] = self::pk($center->add(
-					$dx * $ycos + $dz * $ysin,
-					$dy * $pcos,
-					$dx * -$ysin + $dz * $ycos,
+					$dz * -$ysin + $dx * $ycos,
+					$dy * -$pcos,
+					$dz * $ycos + $dx * $ysin
 				), $data['c']);
 			}
 			if($p_count >= $count){

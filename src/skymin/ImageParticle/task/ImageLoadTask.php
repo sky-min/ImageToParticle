@@ -34,11 +34,11 @@ use skymin\ImageParticle\ImageParticle;
 use skymin\ImageParticle\ImageParticleAPI;
 
 use function count;
-use function intdiv;
 use function explode;
 use function is_array;
 use function rtrim;
 use function strtolower;
+use function file_exists;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
@@ -73,11 +73,13 @@ final class ImageLoadTask extends AsyncTask{
 		if($count < 1) {
 			return;
 		}
-		$this->logger->notice("Trying to load {$count} images.");
+		$logger = $this->logger;
+		$logger->notice("Trying to load {$count} images.");
 		$this->count = $count;
 		$path = $this->path;
 		$result = [];
 		foreach($list as $fileName){
+			$logger->debug('Starting to load ' . $fileName);
 			$realFile = $path . $fileName;
 			$explode = explode('.', $fileName);
 			$excount = count($explode);
@@ -86,6 +88,10 @@ final class ImageLoadTask extends AsyncTask{
 				$realFile .= '.png';
 			}else{
 				$excount--;
+			}
+			if(!file_exists($realFile)){
+				$logger->warning($realFile . ' is not exists');
+				continue;
 			}
 			$extension = $explode[$excount];
 			$img = match(strtolower($extension)){
@@ -97,12 +103,13 @@ final class ImageLoadTask extends AsyncTask{
 				default => false
 			};
 			if($img === false){
+				$logger->warning($fileNme . ' is not supported format');
 				continue;
 			}
 			$sx = imagesx($img);
 			$sy = imagesy($img);
-			$cx = intdiv($sx, 2);
-			$cy = intdiv($sy, 2);
+			$cx = $sx / 2 - 0.5;
+			$cy = $sy / 2 - 0.5;
 			if($sx % 2 === 0){
 				$cx--;
 			}
@@ -124,7 +131,15 @@ final class ImageLoadTask extends AsyncTask{
 				}
 			}
 			$name = rtrim($fileName, '.' . $extension);
+			if(isset($result[$name])){
+				$flag = 2;
+				while(isset($result[$name . '-' . $flag])){
+					$flag++;
+				}
+				$name .= '-' . $flag;
+			}
 			$result[$name] = new ImageParticle($name, $data);
+			$logger->debug($fileName . ' load complete');
 		}
 		$this->setResult($result);
 	}

@@ -62,7 +62,16 @@ final class ImageParticleAPI{
 		return $this->list;
 	}
 
-	public function sendParticle(string $name, Position $center, float $yaw = 0.0, float $pitch = 0.0, int $count = 4, float $unit = 0.5, bool $asyncEncode = true) : void{
+	//Standard
+	public function sendParticle(
+		string $name,
+		Position $center,
+		float $yaw = 0.0,
+		float $pitch = 0.0,
+		int $count = 4,
+		float $unit = 0.5,
+		bool $asyncEncode = true
+	) : void{
 		$particle = $this->getParticle($name);
 		if($particle === null) {
 			return;

@@ -36,6 +36,7 @@ use skymin\data\Data;
 use function mkdir;
 use function is_dir;
 use function usleep;
+use function extension_loaded;
 
 final class Loader extends PluginBase{
 
@@ -43,7 +44,7 @@ final class Loader extends PluginBase{
 
 	protected function onEnable() : void{
 		if(!extension_loaded('gd')){
-			throw new PluginException("Missing GD library!");
+			throw new PluginException('Missing GD library!');
 		}
 		$folder = $this->getDataFolder();
 		$imgPath = $folder . 'image/';
@@ -59,7 +60,7 @@ final class Loader extends PluginBase{
 		$server->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
 		$this->api = ImageParticleAPI::getInstance();
 		while(!$async->isFinished()){
-			usleep(250);
+			usleep(1000);
 		}
 	}
 
