@@ -21,38 +21,40 @@
  *
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace skymin\ImageParticle\command;
 
-use pocketmine\command\{Command, CommandSender};
-use pocketmine\player\Player;
-use pocketmine\plugin\{Plugin, PluginOwned};
-use pocketmine\scheduler\ClosureTask;
-use pocketmine\world\Position;
-
 use skymin\FormLib\CustomForm;
 use skymin\FormLib\element\{Dropdown, Input};
-
 use skymin\ImageParticle\ImageParticleAPI;
 use skymin\ImageParticle\Loader;
+
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
+use pocketmine\entity\Location;
+use pocketmine\player\Player;
+use pocketmine\plugin\PluginOwned;
+use pocketmine\plugin\PluginOwnedTrait;
+use pocketmine\scheduler\ClosureTask;
 
 use function explode;
 use function is_numeric;
 
 final class ImageParticleCmd extends Command implements PluginOwned{
+	use PluginOwnedTrait;
 
-	public function __construct(private Loader $loader){
+	public function __construct(private Loader $owningPlugin){
 		parent::__construct('imageparticle', 'made by skymin', '/imageparticle', ['imgpar']);
 		$this->setPermission('imageparticle.op');
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : void{
-		if(!$sender instanceof Player || !$this->testPermission($sender)) {
+		if(!$sender instanceof Player || !$this->testPermission($sender)){
 			return;
 		}
-		$pos = $sender->getPosition();
-		$posdefault = "{$pos->x}:{$pos->y}:{$pos->z}";
+		$pos = $sender->getLocation();
+		$posdefault = "$pos->x:$pos->y:$pos->z";
 		$sender->sendForm(new CustomForm(
 			'ImageParticle',
 			[
@@ -63,25 +65,21 @@ final class ImageParticleCmd extends Command implements PluginOwned{
 				new Input('count', '4', '', Input::TYPE_INT, true),
 				new Input('unit', '0.5', '', Input::TYPE_FLOAT, true)
 			],
-			function(Player $player, $data) use($pos, $posdefault) : void{
+			function(Player $player, $data) use ($pos, $posdefault) : void{
 				$newpos = $pos;
 				if($data[1] !== $posdefault){
 					$explode = explode(':', $data[1], 3);
 					if(
 						isset($explode[0], $explode[1], $explode[2]) && is_numeric($explode[0]) && is_numeric($explode[1]) && is_numeric($explode[2])
 					){
-						$newpos = new Position((float) $explode[0], (float) $explode[1], (float) $explode[2], $pos->world);
+						$newpos = new Location((float) $explode[0], (float) $explode[1], (float) $explode[2], $pos->getWorld(), $data[2], $data[3]);
 					}
 				}
-				$this->loader->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use($newpos, $data): void{
-					ImageParticleAPI::getInstance()->sendParticle($data[0], $newpos, $data[2], $data[3], $data[4], $data[5]);
+				$this->owningPlugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($newpos, $data) : void{
+					ImageParticleAPI::getInstance()->sendParticle($data[0], $newpos, $data[4], $data[5]);
 				}), 4);
 			}
 		));
-	}
-
-	public function getOwningPlugin() : Plugin{
-		return $this->loader;
 	}
 
 }
