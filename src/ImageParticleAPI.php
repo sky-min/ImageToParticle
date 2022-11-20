@@ -49,6 +49,7 @@ final class ImageParticleAPI{
 	private Server $server;
 
 	public function __construct(){
+		self::setInstance($this);
 		$this->server = Server::getInstance();
 	}
 
