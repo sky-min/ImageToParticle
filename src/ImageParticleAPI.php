@@ -85,7 +85,6 @@ final class ImageParticleAPI{
 		$this->server->getAsyncPool()->submitTask($task);
 	}
 
-	//Standard
 	public function sendParticle(
 		string $name,
 		Location $center,
