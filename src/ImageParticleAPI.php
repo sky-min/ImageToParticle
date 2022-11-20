@@ -48,14 +48,27 @@ final class ImageParticleAPI{
 
 	private Server $server;
 
+	/**
+	 * @var string[]
+	 * @phpstan-var array<int, string>
+	 */
+	private array $loadWaitingList = [];
+
 	public function __construct(){
 		self::setInstance($this);
 		$this->server = Server::getInstance();
 	}
 
 	//Please don't use
-	public function setParticles(string $key, ImageParticle $particle) : void{
-		$this->particles[$key] = $particle;
+	public function setParticle(int $id, array $data) : void{
+		$name = $this->loadWaitingList[$id];
+		unset($this->loadWaitingList[$id]);
+		var_dump($this->loadWaitingList);
+		$this->particles[$name] = new ImageParticle($name, $data);
+	}
+
+	public function getParticle(string $name) : ?ImageParticle{
+		return $this->particles[$name] ?? null;
 	}
 
 	public function getParticleList() : array{
@@ -67,7 +80,9 @@ final class ImageParticleAPI{
 			throw new \RuntimeException('already registered Particle Name');
 		}
 		$this->list[] = $name;
-		$this->server->getAsyncPool()->submitTask(new ImageLoadTask($name, $imageFile, $imageType));
+		$task = new ImageLoadTask($name, $imageFile, $imageType);
+		$this->loadWaitingList[spl_object_id($task)] = $name;
+		$this->server->getAsyncPool()->submitTask($task);
 	}
 
 	//Standard
@@ -79,27 +94,19 @@ final class ImageParticleAPI{
 		bool $asyncEncode = true
 	) : void{
 		$particle = $this->getParticle($name);
-		if($particle === null){
-			return;
-		}
+		if($particle === null) return;
 		if($asyncEncode){
 			$this->server->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $count, $unit));
 			return;
 		}
 		$vec = $center->asVector3();
 		$target = $center->world->getViewersForPosition($vec);
-		if(count($target) === 1){
-			return;
-		}
+		if(count($target) === 1) return;
 		$pks = [];
 		foreach($particle->encode($center, $count, $unit) as $particlePk){
 			$pks[] = $particlePk;
 		}
 		$this->server->broadcastPackets($target, $pks);
-	}
-
-	public function getParticle(string $name) : ?ImageParticle{
-		return $this->particles[$name] ?? null;
 	}
 
 }

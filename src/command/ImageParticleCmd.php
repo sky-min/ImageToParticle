@@ -44,9 +44,10 @@ use function is_numeric;
 final class ImageParticleCmd extends Command implements PluginOwned{
 	use PluginOwnedTrait;
 
-	public function __construct(private Loader $owningPlugin){
+	public function __construct(Loader $loader){
 		parent::__construct('imageparticle', 'made by skymin', '/imageparticle', ['imgpar']);
 		$this->setPermission('imageparticle.op');
+		$this->owningPlugin = $loader;
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : void{

@@ -1,0 +1,8 @@
+---
+haha:
+  file: haha.jpg
+  type: jpeg
+test:
+  file: test.png
+  type: png
+...

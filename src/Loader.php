@@ -39,14 +39,11 @@ use function mkdir;
 final class Loader extends PluginBase{
 
 	private const IMAGE_PATH = 'image';
+
 	private ImageParticleAPI $api;
 
-	public function onLoad() : void{
+	protected function onLoad() : void{
 		$this->api = new ImageParticleAPI();
-	}
-
-	public function getApi() : ImageParticleAPI{
-		return $this->api;
 	}
 
 	protected function onEnable() : void{
@@ -58,7 +55,7 @@ final class Loader extends PluginBase{
 		if(!is_dir($imgPath)){
 			mkdir($imgPath);
 		}
-		foreach((new Config($folder . 'Images.txt', Config::YAML))->getAll() as $name => $data){
+		foreach((new Config($folder . 'Images.yml', Config::YAML))->getAll() as $name => $data){
 			$this->api->registerImage(
 				name: $name,
 				imageFile: Path::join($folder, self::IMAGE_PATH, $data['file']),
@@ -68,4 +65,7 @@ final class Loader extends PluginBase{
 		$this->getServer()->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
 	}
 
+	public function getApi() : ImageParticleAPI{
+		return $this->api;
+	}
 }

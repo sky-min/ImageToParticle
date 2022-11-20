@@ -99,12 +99,14 @@ final class ImageLoadTask extends AsyncTask{
 			}
 		}
 		$this->logger->debug($this->fileName . ' load complete');
-		$this->setResult(new ImageParticle($this->name, $data));
+		$this->setResult($data);
 	}
 
 	public function onCompletion() : void{
-		$result = $this->getResult();
-		ImageParticleAPI::getInstance()->setParticles($this->name, $result);
+		ImageParticleAPI::getInstance()->setParticle(
+			id: spl_object_id($this),
+			data: $this->getResult()
+		);
 	}
 
 }
