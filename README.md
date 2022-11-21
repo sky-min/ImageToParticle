@@ -15,7 +15,7 @@
 ```php
 use skymin\ImageParticle\ImageParticleAPI;
 
-/** @see skymin\ImageParticle\ImageTypes for $imageType*\
+/** @see skymin\ImageParticle\ImageTypes for $imageType*/
 ImageParticleAPI::getInstance()->registerImage(string $name, string $imageFile, int $imageType);
 ```
 
