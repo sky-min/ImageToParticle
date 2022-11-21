@@ -27,6 +27,9 @@ namespace skymin\ImageParticle;
 
 use skymin\ImageParticle\command\ImageParticleCmd;
 
+use pocketmine\event\EventPriority;
+use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
 use pocketmine\utils\Config;
@@ -41,6 +44,10 @@ final class Loader extends PluginBase{
 	private const IMAGE_PATH = 'image';
 
 	private ImageParticleAPI $api;
+
+	public function getApi() : ImageParticleAPI{
+		return $this->api;
+	}
 
 	protected function onLoad() : void{
 		$this->api = new ImageParticleAPI();
@@ -62,10 +69,20 @@ final class Loader extends PluginBase{
 				imageType: ImageTypes::stringType($data['type'])
 			);
 		}
-		$this->getServer()->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
-	}
-
-	public function getApi() : ImageParticleAPI{
-		return $this->api;
+		$setting = new Config($folder . 'Setting.yml', Config::YAML, [
+			'wait' => true,
+			'wait-message' => "Image is loading.\nTry again later"
+		]);
+		$server = $this->getServer();
+		$server->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
+		if($setting->get('wait')){
+			$msg = $setting->get('wait-message');
+			$server->getPluginManager()->registerEvent(DataPacketReceiveEvent::class, function(DataPacketReceiveEvent $ev) use ($msg) : void{
+				if(!$ev->getPacket() instanceof LoginPacket) return;
+				if($this->api->getWaitList() !== []){
+					$ev->getOrigin()->disconnect($msg);
+				}
+			}, EventPriority::MONITOR, $this);
+		}
 	}
 }

@@ -27,7 +27,6 @@ namespace skymin\ImageParticle\task;
 
 use PrefixedLogger;
 
-use skymin\ImageParticle\ImageParticle;
 use skymin\ImageParticle\ImageParticleAPI;
 use skymin\ImageParticle\ImageTypes;
 
@@ -35,6 +34,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
 use function file_exists;
+use function is_array;
 use function imagecolorat;
 use function imagecreatefrombmp;
 use function imagecreatefromjpeg;
@@ -49,7 +49,6 @@ final class ImageLoadTask extends AsyncTask{
 	private PrefixedLogger $logger;
 
 	public function __construct(
-		private string $name,
 		private string $fileName,
 		private int $type
 	){
@@ -103,9 +102,14 @@ final class ImageLoadTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
+		$result = $this->getResult();
+		if(!is_array($result)){
+			ImageParticleAPI::getInstance()->failImageLoad(spl_object_id($this));
+			return;
+		}
 		ImageParticleAPI::getInstance()->setParticle(
 			id: spl_object_id($this),
-			data: $this->getResult()
+			data: $result
 		);
 	}
 

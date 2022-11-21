@@ -33,7 +33,6 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\world\World;
 
-use function count;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
@@ -83,7 +82,7 @@ final class AsyncSendParticle extends AsyncTask{
 		/** @var Vector3 $center */
 		$center = igbinary_unserialize($this->center);
 		$target = $world->getViewersForPosition($center);
-		if(count($target) < 1) return;
+		if($target === []) return;
 		$particles = $this->getResult();
 		Server::getInstance()->broadcastPackets($target, $particles);
 	}

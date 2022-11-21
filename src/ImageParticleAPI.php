@@ -32,8 +32,6 @@ use pocketmine\entity\Location;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 
-use function count;
-
 final class ImageParticleAPI{
 	use SingletonTrait;
 
@@ -63,8 +61,17 @@ final class ImageParticleAPI{
 	public function setParticle(int $id, array $data) : void{
 		$name = $this->loadWaitingList[$id];
 		unset($this->loadWaitingList[$id]);
-		var_dump($this->loadWaitingList);
 		$this->particles[$name] = new ImageParticle($name, $data);
+	}
+
+	public function failImageLoad(int $id) : void{
+		$name = $this->loadWaitingList[$id];
+		unset($this->loadWaitingList[$id]);
+		unset($this->list[$name]);
+	}
+
+	public function getWaitList() : array{
+		return $this->loadWaitingList;
 	}
 
 	public function getParticle(string $name) : ?ImageParticle{
@@ -80,7 +87,7 @@ final class ImageParticleAPI{
 			throw new \RuntimeException('already registered Particle Name');
 		}
 		$this->list[] = $name;
-		$task = new ImageLoadTask($name, $imageFile, $imageType);
+		$task = new ImageLoadTask($imageFile, $imageType);
 		$this->loadWaitingList[spl_object_id($task)] = $name;
 		$this->server->getAsyncPool()->submitTask($task);
 	}
@@ -100,7 +107,7 @@ final class ImageParticleAPI{
 		}
 		$vec = $center->asVector3();
 		$target = $center->world->getViewersForPosition($vec);
-		if(count($target) === 1) return;
+		if($target === []) return;
 		$pks = [];
 		foreach($particle->encode($center, $count, $unit) as $particlePk){
 			$pks[] = $particlePk;
