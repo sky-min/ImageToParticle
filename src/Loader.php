@@ -33,8 +33,8 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
 use pocketmine\utils\Config;
-use Webmozart\PathUtil\Path;
 
+use Symfony\Component\Filesystem\Path;
 use function extension_loaded;
 use function is_dir;
 use function mkdir;
