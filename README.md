@@ -13,15 +13,15 @@
 # API
 ## registerImageParticle
 ```php
-use skymin\ImageParticle\ImageParticleAPI;
+use skymin\ImageParticle\particle\ImageParticleAPI;
 
-/** @see skymin\ImageParticle\ImageTypes for $imageType*/
+/** @see skymin\ImageParticle\utils\ImageTypes for $imageType*/
 ImageParticleAPI::getInstance()->registerImage(string $name, string $imageFile, int $imageType);
 ```
 
 ## sendImageParticle
 ```php
-use skymin\ImageParticle\ImageParticleAPI;
+use skymin\ImageParticle\particle\ImageParticleAPI;
 
 /** @param pocketmine\entity\Location $center */
 ImageParticleAPI::getInstance()->sendParticle(string $name, Location $center, int $count, float $unit, bool $asyncEncode);
