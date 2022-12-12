@@ -4,7 +4,4 @@ branches:
 projects:
   ImageToParticle:
     path: ""
-    libs:
-      - src: sky-min/FormLib/FormLib
-        version: ^1.1.3
 ...
