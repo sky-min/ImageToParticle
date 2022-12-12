@@ -25,14 +25,13 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle\task;
 
-use skymin\ImageParticle\ImageParticle;
 
 use pocketmine\entity\Location;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\world\World;
-
+use skymin\ImageParticle\particle\ImageParticle;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 

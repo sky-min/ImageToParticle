@@ -23,7 +23,7 @@
 
 declare(strict_types=1);
 
-namespace skymin\ImageParticle;
+namespace skymin\ImageParticle\particle;
 
 use Generator;
 use RangeException;
@@ -48,7 +48,10 @@ final class ImageParticle{
 		return $this->name;
 	}
 
-	/** @return Generator<LevelEventPacket> */
+	/**
+	 * @return Generator
+	 * @phpstan-return Generator<LevelEventPacket>
+	 */
 	public function encode(Location $location, int $count = 4, float $unit = 0.1) : Generator{
 		if($count < 0){
 			throw new RangeException('A value greater than or equal to 0 should be obtained');

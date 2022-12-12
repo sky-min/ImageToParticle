@@ -25,15 +25,15 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle;
 
-use skymin\ImageParticle\command\ImageParticleCmd;
-
+use pocketmine\entity\Location;
 use pocketmine\event\EventPriority;
-use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\event\player\PlayerItemUseEvent;
+use skymin\ImageParticle\command\ImageParticleCmd;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
 use pocketmine\utils\Config;
-
+use skymin\ImageParticle\particle\ImageParticleAPI;
+use skymin\ImageParticle\utils\ImageTypes;
 use Symfony\Component\Filesystem\Path;
 use function extension_loaded;
 use function is_dir;
@@ -53,7 +53,7 @@ final class Loader extends PluginBase{
 		$this->api = new ImageParticleAPI();
 	}
 
-	protected function onEnable() : void{
+    protected function onEnable() : void{
 		if(!extension_loaded('gd')){
 			throw new PluginException('Missing GD library!');
 		}
@@ -69,20 +69,18 @@ final class Loader extends PluginBase{
 				imageType: ImageTypes::stringType($data['type'])
 			);
 		}
-		$setting = new Config($folder . 'Setting.yml', Config::YAML, [
-			'wait' => true,
-			'wait-message' => "Image is loading.\nTry again later"
-		]);
 		$server = $this->getServer();
-		$server->getCommandMap()->register('imageparticle', new ImageParticleCmd($this));
-		if($setting->get('wait')){
-			$msg = $setting->get('wait-message');
-			$server->getPluginManager()->registerEvent(DataPacketReceiveEvent::class, function(DataPacketReceiveEvent $ev) use ($msg) : void{
-				if(!$ev->getPacket() instanceof LoginPacket) return;
-				if($this->api->getWaitList() !== []){
-					$ev->getOrigin()->disconnect($msg);
-				}
-			}, EventPriority::MONITOR, $this);
-		}
+		$server->getCommandMap()->register($this->getName(), new ImageParticleCmd($this));
+		$server->getPluginManager()->registerEvent(PlayerItemUseEvent::class, function(PlayerItemUseEvent $ev) : void{
+			$item = $ev->getItem();
+			if($this->api->isTestItem($item)){
+				$player = $ev->getPlayer();
+				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
+				$location = $player->getLocation();
+				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
+				$center = Location::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch());
+				$this->api->sendParticle($name, $center);
+			}
+		}, EventPriority::LOWEST, $this);
 	}
 }

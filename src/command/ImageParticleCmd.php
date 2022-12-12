@@ -25,27 +25,19 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle\command;
 
-use skymin\FormLib\CustomForm;
-use skymin\FormLib\element\{Dropdown, Input};
-use skymin\ImageParticle\ImageParticleAPI;
 use skymin\ImageParticle\Loader;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\entity\Location;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\PluginOwnedTrait;
-use pocketmine\scheduler\ClosureTask;
-
-use function explode;
-use function is_numeric;
 
 final class ImageParticleCmd extends Command implements PluginOwned{
 	use PluginOwnedTrait;
 
 	public function __construct(Loader $loader){
-		parent::__construct('imageparticle', 'made by skymin', '/imageparticle', ['imgpar']);
+		parent::__construct('imageparticle', 'made by skymin', '/imageparticle [image name]', ['imgpar', 'testimg']);
 		$this->setPermission('imageparticle.op');
 		$this->owningPlugin = $loader;
 	}
@@ -54,33 +46,15 @@ final class ImageParticleCmd extends Command implements PluginOwned{
 		if(!$sender instanceof Player || !$this->testPermission($sender)){
 			return;
 		}
-		$pos = $sender->getLocation();
-		$posdefault = "$pos->x:$pos->y:$pos->z";
-		$sender->sendForm(new CustomForm(
-			'ImageParticle',
-			[
-				new Dropdown('name', ImageParticleAPI::getInstance()->getParticleList()),
-				new Input('pos', $posdefault, 'x:y:z', Input::TYPE_STRING, true),
-				new Input('yaw', '0.0', '', Input::TYPE_FLOAT, true),
-				new Input('pitch', '0.0', '', Input::TYPE_FLOAT, true),
-				new Input('count', '4', '', Input::TYPE_INT, true),
-				new Input('unit', '0.5', '', Input::TYPE_FLOAT, true)
-			],
-			function(Player $player, $data) use ($pos, $posdefault) : void{
-				$newpos = $pos;
-				if($data[1] !== $posdefault){
-					$explode = explode(':', $data[1], 3);
-					if(
-						isset($explode[0], $explode[1], $explode[2]) && is_numeric($explode[0]) && is_numeric($explode[1]) && is_numeric($explode[2])
-					){
-						$newpos = new Location((float) $explode[0], (float) $explode[1], (float) $explode[2], $pos->getWorld(), $data[2], $data[3]);
-					}
-				}
-				$this->owningPlugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($newpos, $data) : void{
-					ImageParticleAPI::getInstance()->sendParticle($data[0], $newpos, $data[4], $data[5]);
-				}), 4);
-			}
-		));
+		if(!isset($args[0])){
+			$sender->sendMessage($this->usageMessage);
+			return;
+		}
+		$api = $this->owningPlugin->getApi();
+		if(!$api->existsParticle($args[0])){
+			$sender->sendMessage($args[0] . 'is an unregistered image');
+			return;
+		}
+		$sender->getInventory()->addItem($api->createTestItem($args[0]));
 	}
-
 }

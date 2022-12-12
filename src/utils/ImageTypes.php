@@ -24,7 +24,7 @@
 
 declare(strict_types=1);
 
-namespace skymin\ImageParticle;
+namespace skymin\ImageParticle\utils;
 
 use function strtolower;
 
