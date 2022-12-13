@@ -5,7 +5,6 @@ version: 2.1.0
 author: skymin
 api:
   - 4.11.0
-  - 5.0.0
 
 permissions:
   imageparticle.op:
