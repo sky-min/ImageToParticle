@@ -53,7 +53,7 @@ final class Loader extends PluginBase{
 		$this->api = new ImageParticleAPI();
 	}
 
-    protected function onEnable() : void{
+	protected function onEnable() : void{
 		if(!extension_loaded('gd')){
 			throw new PluginException('Missing GD library!');
 		}
