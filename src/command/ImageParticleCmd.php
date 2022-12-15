@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace skymin\ImageParticle\command;
 
 use skymin\ImageParticle\Loader;
-
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;

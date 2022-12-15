@@ -73,9 +73,9 @@ final class ImageParticle{
 				$dy = $data['p'][1] * $unit;
 				$dz = $dy * $psin;
 				yield self::pk($center->add(
-					$dz * -$ysin + $dx * $ycos,
+					$dz * $ysin + $dx * $ycos,
 					$dy * -$pcos,
-					$dz * $ycos + $dx * $ysin
+					$dz * -$ycos + $dx * $ysin
 				), $data['c']);
 			}
 		}
