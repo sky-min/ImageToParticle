@@ -26,11 +26,11 @@ declare(strict_types=1);
 namespace skymin\ImageParticle\task;
 
 
-use pocketmine\entity\Location;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\world\World;
+use skymin\ImageParticle\particle\EulerAngle;
 use skymin\ImageParticle\particle\ImageParticle;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -45,14 +45,17 @@ final class AsyncSendParticle extends AsyncTask{
 
 	private float $pitch;
 
+	private float $roll;
+
 	public function __construct(
 		ImageParticle $particle,
-		Location $center,
+		EulerAngle $center,
 		private int $count,
 		private float $unit
 	){
 		$this->yaw = $center->getYaw();
 		$this->pitch = $center->getPitch();
+		$this->roll = $center->getRoll();
 		$this->storeLocal('world', $center->world);
 		$this->particle = igbinary_serialize($particle);
 		$this->center = igbinary_serialize($center->asVector3());
@@ -65,7 +68,7 @@ final class AsyncSendParticle extends AsyncTask{
 		$center = igbinary_unserialize($this->center);
 		$result = [];
 		foreach($particle->encode(
-			Location::fromObject($center, null, $this->yaw, $this->pitch),
+			EulerAngle::fromObject($center, null, $this->yaw, $this->pitch, $this->roll),
 			$this->count,
 			$this->unit
 		) as $pk){
