@@ -26,11 +26,12 @@ declare(strict_types=1);
 namespace skymin\ImageParticle\particle;
 
 use Generator;
+use pocketmine\network\mcpe\protocol\SpawnParticleEffectPacket;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use RangeException;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 use function cos;
 use function deg2rad;
@@ -38,6 +39,9 @@ use function sin;
 
 final class ImageParticle{
 
+	/**
+	 * @param int[][] $particles
+	 */
 	public function __construct(
 		private string $name,
 		private array $particles
@@ -51,7 +55,8 @@ final class ImageParticle{
 	 * @return Generator
 	 * @phpstan-return Generator<LevelEventPacket>
 	 */
-	public function encode(EulerAngle $euler, int $count = 4, float $unit = 0.1) : Generator{
+
+	public function encode(Location $location, CustomParticle $customParticle, int $count = 0, float $unit = 0.1) : Generator{
 		if($count < 0){
 			throw new RangeException('A value greater than or equal to 0 should be obtained');
 		}
@@ -67,26 +72,30 @@ final class ImageParticle{
 		$ycos = cos($yaw);
 		$psin = sin($pitch);
 		$pcos = cos($pitch);
-		$rsin = sin($roll);
-		$rcos = cos($roll);
-		foreach($this->particles as $data){
-			if($count === 0 || $p_count++ % $count === 0){
-				$x = $data['p'][0];
-				$y = $data['p'][1];
-				$dx = ($y * $rsin + $x * $rcos) * $unit;
-				$dy = ($y * $rcos - $x * $rsin) * $unit;
-				$dz = $dy * $psin;
-				yield self::pk($center->add(
-					$dz * $ysin + $dx * $ycos,
-					$dy * -$pcos,
-					$dz * -$ycos + $dx * $ysin
-				), $data['c']);
+		foreach($this->particles as $x => $yList){
+			foreach($yList as $y => $color){
+				if($count === 0 || $p_count++ % $count === 0){
+					$dx = $x / 10 * $unit;
+					$dy = $y / 10 * $unit;
+					$dz = $dy * $psin;
+					yield self::pk($center->add(
+						$dz * $ysin + $dx * $ycos,
+						$dy * -$pcos,
+						$dz * -$ycos + $dx * $ysin
+					), $customParticle->setColor($color));
+				}
 			}
 		}
 	}
 
-	private static function pk(Vector3 $pos, int $color) : LevelEventPacket{
-		return LevelEventPacket::standardParticle(ParticleIds::DUST, $color, $pos);
+	private static function pk(Vector3 $pos, CustomParticle $customParticle) : SpawnParticleEffectPacket{
+		return SpawnParticleEffectPacket::create(
+			dimensionId: DimensionIds::OVERWORLD,
+			actorUniqueId: -1,
+			position: $pos,
+			particleName: 'skymin:custom_dust',
+			molangVariablesJson: json_encode($customParticle)
+		);
 	}
 
 }
