@@ -40,6 +40,8 @@ use Symfony\Component\Filesystem\Path;
 use function extension_loaded;
 use function is_dir;
 use function mkdir;
+use function mt_rand;
+use function round;
 
 final class Loader extends PluginBase{
 
@@ -80,6 +82,7 @@ final class Loader extends PluginBase{
 				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
 				$location = $player->getLocation();
 				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
+
 				$newLocation = Location::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch());
 				$this->api->sendParticle($name, $newLocation, new CustomParticle(
 					0.05,

@@ -30,7 +30,6 @@ use pocketmine\network\mcpe\protocol\SpawnParticleEffectPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use RangeException;
 
-use pocketmine\entity\Location;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
@@ -56,6 +55,7 @@ final class ImageParticle{
 	 * @return Generator
 	 * @phpstan-return Generator<LevelEventPacket>
 	 */
+
 	public function encode(Location $location, CustomParticle $customParticle, int $count = 0, float $unit = 0.1) : Generator{
 		if($count < 0){
 			throw new RangeException('A value greater than or equal to 0 should be obtained');
@@ -64,9 +64,10 @@ final class ImageParticle{
 			throw new RangeException('Must be a positive value.');
 		}
 		$p_count = 0;
-		$center = $location->asVector3();
-		$yaw = deg2rad($location->getYaw());
-		$pitch = deg2rad($location->getPitch());
+		$center = $euler->asVector3();
+		$yaw = deg2rad($euler->getYaw());
+		$pitch = deg2rad($euler->getPitch());
+		$roll = deg2rad($euler->getRoll());
 		$ysin = sin($yaw);
 		$ycos = cos($yaw);
 		$psin = sin($pitch);

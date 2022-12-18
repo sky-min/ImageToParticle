@@ -1,5 +1,5 @@
 # Todo
-- [ ] roll (need help)
+- [x] roll
 - [x] yaw pitch equal to entity yaw pitch
 
 # how to use
@@ -22,7 +22,7 @@ ImageParticleAPI::getInstance()->registerImage(string $name, string $imageFile, 
 ## sendImageParticle
 ```php
 use skymin\ImageParticle\particle\ImageParticleAPI;
+use skymin\ImageParticle\particle\EulerAngle;
 
-/** @param pocketmine\entity\Location $center */
-ImageParticleAPI::getInstance()->sendParticle(string $name, Location $center, int $count, float $unit, bool $asyncEncode);
+ImageParticleAPI::getInstance()->sendParticle(string $name, EulerAngle $center, int $count, float $unit, bool $asyncEncode);
 ```

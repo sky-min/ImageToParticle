@@ -25,13 +25,13 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle\particle;
 
-use pocketmine\entity\Location;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
+use RuntimeException;
 use skymin\ImageParticle\task\AsyncSendParticle;
 use skymin\ImageParticle\utils\ImageTypes;
 use function file_exists;
@@ -108,10 +108,10 @@ final class ImageParticleAPI{
 		int $imageType = ImageTypes::PNG
 	) : void{
 		if(isset($this->particles[$name])){
-			throw new \RuntimeException('already registered Particle Name');
+			throw new RuntimeException('already registered Particle Name');
 		}
 		if(!file_exists($imageFile)){
-			throw new \RuntimeException($imageFile . ' is not exists');
+			throw new RuntimeException($imageFile . ' is not exists');
 		}
 		$img = match ($imageType) {
 			ImageTypes::PNG => imagecreatefrompng($imageFile),
@@ -122,7 +122,7 @@ final class ImageParticleAPI{
 			default => false
 		};
 		if($img === false){
-			throw new \RuntimeException($imageFile . ' load failure');
+			throw new RuntimeException($imageFile . ' load failure');
 		}
 		$sx = imagesx($img);
 		$sy = imagesy($img);
@@ -164,7 +164,7 @@ final class ImageParticleAPI{
 			return;
 		} */
 		$vec = $center->asVector3();
-		$target = $center->world->getViewersForPosition($vec);
+		$target = $center->getWorld()->getViewersForPosition($vec);
 		if($target === []) return;
 		$pks = [];
 		foreach($particle->encode($center, $customParticle, $count, $unit) as $particlePk){
