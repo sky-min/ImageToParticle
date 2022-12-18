@@ -39,6 +39,8 @@ use Symfony\Component\Filesystem\Path;
 use function extension_loaded;
 use function is_dir;
 use function mkdir;
+use function mt_rand;
+use function round;
 
 final class Loader extends PluginBase{
 
@@ -79,8 +81,18 @@ final class Loader extends PluginBase{
 				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
 				$location = $player->getLocation();
 				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
-				$center = EulerAngle::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch(), 90);
+				$yaw = $location->getYaw();
+				$pitch = $location->getPitch();
+				$roll = mt_rand(0, 3600) / 10;
+				$center = EulerAngle::fromObject(
+					$centerVector,
+					$location->getWorld(),
+					$yaw,
+					$pitch,
+					$roll
+				);
 				$this->api->sendParticle($name, $center);
+				$player->sendPopup('§l§b' . round($yaw, 3) .  ' §f: §c' . round($pitch, 3) . ' §f: §a' . round($roll, 3));
 			}
 		}, EventPriority::LOWEST, $this);
 	}
