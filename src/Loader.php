@@ -28,12 +28,11 @@ namespace skymin\ImageParticle;
 use pocketmine\entity\Location;
 use pocketmine\event\EventPriority;
 use pocketmine\event\player\PlayerItemUseEvent;
-use pocketmine\math\Vector3;
 use skymin\ImageParticle\command\ImageParticleCmd;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
 use pocketmine\utils\Config;
-use skymin\ImageParticle\particle\CustomParticle;
+use skymin\ImageParticle\particle\EulerAngle;
 use skymin\ImageParticle\particle\ImageParticleAPI;
 use skymin\ImageParticle\utils\ImageTypes;
 use Symfony\Component\Filesystem\Path;
@@ -82,15 +81,18 @@ final class Loader extends PluginBase{
 				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
 				$location = $player->getLocation();
 				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
-
-				$newLocation = Location::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch());
-				$this->api->sendParticle($name, $newLocation, new CustomParticle(
-					0.05,
-					10,
-					new Vector3(0, 0.5, 0),
-					1,
-					0.001
-				));
+				$yaw = $location->getYaw();
+				$pitch = $location->getPitch();
+				$roll = mt_rand(0, 3600) / 10;
+				$center = EulerAngle::fromObject(
+					$centerVector,
+					$location->getWorld(),
+					$yaw,
+					$pitch,
+					$roll
+				);
+				$this->api->sendParticle($name, $center);
+				$player->sendPopup('§l§b' . round($yaw, 3) .  ' §f: §c' . round($pitch, 3) . ' §f: §a' . round($roll, 3));
 			}
 		}, EventPriority::LOWEST, $this);
 	}

@@ -142,7 +142,10 @@ final class ImageParticleAPI{
 				if($a < 50){
 					continue;
 				}
-				$data[(int)($x - $cx * 10)][(int)($y - $cy * 10)] = $colorat;
+				$data[] = [
+					'c' => $colorat,
+					'p' => [$x - $cx, $y - $cy]
+				];
 			}
 		}
 		$this->particles[$name] = new ImageParticle($name, $data);
@@ -150,24 +153,22 @@ final class ImageParticleAPI{
 
 	public function sendParticle(
 		string $name,
-		Location $center,
-		CustomParticle $customParticle,
-		int $count = 0,
-		float $unit = 0.1,
-		//bool $asyncEncode = true
+		EulerAngle $center,
+		int $count = 1,
+		float $unit = 0.05,
+		bool $asyncEncode = true
 	) : void{
 		$particle = $this->getParticle($name);
 		if($particle === null) return;
-		/*
 		if($asyncEncode){
 			$this->server->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $count, $unit));
 			return;
-		} */
+		}
 		$vec = $center->asVector3();
 		$target = $center->getWorld()->getViewersForPosition($vec);
 		if($target === []) return;
 		$pks = [];
-		foreach($particle->encode($center, $customParticle, $count, $unit) as $particlePk){
+		foreach($particle->encode($center, $count, $unit) as $particlePk){
 			$pks[] = $particlePk;
 		}
 		$this->server->broadcastPackets($target, $pks);
