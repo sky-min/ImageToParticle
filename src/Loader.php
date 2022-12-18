@@ -79,7 +79,7 @@ final class Loader extends PluginBase{
 				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
 				$location = $player->getLocation();
 				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
-				$center = EulerAngle::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch(), 180);
+				$center = EulerAngle::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch(), 90);
 				$this->api->sendParticle($name, $center);
 			}
 		}, EventPriority::LOWEST, $this);

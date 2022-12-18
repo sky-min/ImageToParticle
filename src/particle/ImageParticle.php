@@ -68,13 +68,13 @@ final class ImageParticle{
 		$psin = sin($pitch);
 		$pcos = cos($pitch);
 		$rsin = sin($roll);
-		$rcos = sin($roll);
+		$rcos = cos($roll);
 		foreach($this->particles as $data){
 			if($count === 0 || $p_count++ % $count === 0){
 				$x = $data['p'][0];
 				$y = $data['p'][1];
-				$dx = (-$y * $rsin + $x * $rcos + $x) * $unit;
-				$dy = ($y * $rcos + $x * $rsin + $y) * $unit;
+				$dx = ($y * $rsin + $x * $rcos) * $unit;
+				$dy = ($y * $rcos - $x * $rsin) * $unit;
 				$dz = $dy * $psin;
 				yield self::pk($center->add(
 					$dz * $ysin + $dx * $ycos,
