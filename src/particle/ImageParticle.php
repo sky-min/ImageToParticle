@@ -28,7 +28,6 @@ namespace skymin\ImageParticle\particle;
 use Generator;
 use RangeException;
 
-use pocketmine\entity\Location;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
@@ -52,7 +51,7 @@ final class ImageParticle{
 	 * @return Generator
 	 * @phpstan-return Generator<LevelEventPacket>
 	 */
-	public function encode(Location $location, int $count = 4, float $unit = 0.1) : Generator{
+	public function encode(EulerAngle $euler, int $count = 4, float $unit = 0.1) : Generator{
 		if($count < 0){
 			throw new RangeException('A value greater than or equal to 0 should be obtained');
 		}
@@ -60,17 +59,22 @@ final class ImageParticle{
 			throw new RangeException('Must be a positive value.');
 		}
 		$p_count = 0;
-		$center = $location->asVector3();
-		$yaw = deg2rad($location->getYaw());
-		$pitch = deg2rad($location->getPitch());
+		$center = $euler->asVector3();
+		$yaw = deg2rad($euler->getYaw());
+		$pitch = deg2rad($euler->getPitch());
+		$roll = deg2rad($euler->getRoll());
 		$ysin = sin($yaw);
 		$ycos = cos($yaw);
 		$psin = sin($pitch);
 		$pcos = cos($pitch);
+		$rsin = sin($roll);
+		$rcos = sin($roll);
 		foreach($this->particles as $data){
 			if($count === 0 || $p_count++ % $count === 0){
-				$dx = $data['p'][0] * $unit;
-				$dy = $data['p'][1] * $unit;
+				$x = $data['p'][0];
+				$y = $data['p'][1];
+				$dx = (-$y * $rsin + $x * $rcos + $x) * $unit;
+				$dy = ($y * $rcos + $x * $rsin + $y) * $unit;
 				$dz = $dy * $psin;
 				yield self::pk($center->add(
 					$dz * $ysin + $dx * $ycos,

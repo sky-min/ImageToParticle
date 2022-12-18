@@ -32,6 +32,7 @@ use skymin\ImageParticle\command\ImageParticleCmd;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
 use pocketmine\utils\Config;
+use skymin\ImageParticle\particle\EulerAngle;
 use skymin\ImageParticle\particle\ImageParticleAPI;
 use skymin\ImageParticle\utils\ImageTypes;
 use Symfony\Component\Filesystem\Path;
@@ -78,7 +79,7 @@ final class Loader extends PluginBase{
 				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
 				$location = $player->getLocation();
 				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
-				$center = Location::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch());
+				$center = EulerAngle::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch(), 180);
 				$this->api->sendParticle($name, $center);
 			}
 		}, EventPriority::LOWEST, $this);
