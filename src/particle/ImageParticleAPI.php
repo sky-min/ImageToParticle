@@ -29,7 +29,6 @@ use pocketmine\color\Color;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;

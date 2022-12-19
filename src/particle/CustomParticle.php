@@ -46,8 +46,8 @@ final class CustomParticle implements JsonSerializable{
 	private int $color_b = 0;
 
 	/**
-	 * @param float        $size   Greater than 0 and less than or equal to 100
-	 * @param float        $life   0 ~ 1000 | 0 is infinite life
+	 * @param float        $size   0 < $size <= 100
+	 * @param float        $life   0 < 1000 <= 1000
 	 * @param null|Vector3 $motion If null, it is automatically set to 0. Don`t exceed the value of 1 for the values x, y, and z of the Vector.
 	 * @param float        $speed  0 ~ 100
 	 * @param float        $accele -100 ~ 100
@@ -58,7 +58,7 @@ final class CustomParticle implements JsonSerializable{
 		// shape
 		private float $size = 0.075,
 		// life
-		private float $life = 0.0,
+		private float $life = 10,
 		// motion
 		private ?Vector3 $motion = null,
 		private float $speed = 0.0,

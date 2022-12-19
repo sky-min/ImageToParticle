@@ -32,12 +32,12 @@ final class CreateTestItemForm implements Form{
 				],
 				[
 					'type' => 'input',
-					'text' => '§l§bsize §r(Greater than 0 and less than or equal to 100)',
+					'text' => '§l§bsize §r(0 < value < <= 100)',
 					'default' => (string) self::D_SIZE
 				],
 				[
 					'type' => 'input',
-					'text' => '§l§blife §r(0 ~ 1000 | 0 is infinite life)',
+					'text' => '§l§blife §r(0 < value <= 1000)',
 					'default' => (string) self::D_LIFE
 				],
 				[
