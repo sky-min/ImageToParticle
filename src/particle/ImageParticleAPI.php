@@ -29,6 +29,7 @@ use pocketmine\color\Color;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
@@ -75,15 +76,37 @@ final class ImageParticleAPI{
 	public function isTestItem(Item $item) : bool{
 		if($item instanceof FishingRod
 			&& $item->getCustomName() === $this->testItem->getCustomName()
-			&& $item->getNamedTag()->getString(self::TEST_PARTICLE_TAG, '') !== ''
+			&& $item->getNamedTag()->getTag(self::TEST_PARTICLE_TAG) !== null
 		) return true;
 		return false;
 	}
 
-	public function createTestItem(string $name) : Item{
+	public function createTestItem(
+		string $name,
+		float $unit,
+		float $size,
+		float $life,
+		float $motion_x,
+		float $motion_y,
+		float $motion_z,
+		float $speed,
+		float $accele,
+		float $roll
+	) : Item{
 		$oldNbt = $this->testItem->getNamedTag();
 		return $this->testItem
-			->setNamedTag($oldNbt->setString(self::TEST_PARTICLE_TAG, $name))
+			->setNamedTag($oldNbt->setTag(self::TEST_PARTICLE_TAG, CompoundTag::create()
+				->setString('name', $name)
+				->setFloat('unit', $unit)
+				->setFloat('size', $size)
+				->setFloat('life', $life)
+				->setFloat('motion_x', $motion_x)
+				->setFloat('motion_y', $motion_y)
+				->setFloat('motion_z', $motion_z)
+				->setFloat('speed', $speed)
+				->setFloat('accele', $accele)
+				->setFloat('roll', $roll))
+			)
 			->setLore(['§ctest image§r: ' . $name]);
 	}
 
@@ -101,6 +124,11 @@ final class ImageParticleAPI{
 	 */
 	public function getParticles() : array{
 		return $this->particles;
+	}
+
+	/** @return string[] */
+	public function getParticleList() : array{
+		return array_keys($this->particles);
 	}
 
 	public function registerImage(

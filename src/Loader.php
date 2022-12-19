@@ -29,6 +29,7 @@ use Closure;
 use pocketmine\event\EventPriority;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
 use pocketmine\resourcepacks\ResourcePackManager;
@@ -102,21 +103,38 @@ final class Loader extends PluginBase{
 			$item = $ev->getItem();
 			if(!$this->api->isTestItem($item)) return;
 			$player = $ev->getPlayer();
-			$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
+			/** @phpstan-var CompoundTag $info */
+			$info = $item->getNamedTag()->getTag(ImageParticleAPI::TEST_PARTICLE_TAG);
 			$location = $player->getLocation();
 			$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
+
 			$yaw = $location->getYaw();
 			$pitch = $location->getPitch();
-			$roll = mt_rand(0, 3600) / 10;
-			$center = EulerAngle::fromObject(
-				$centerVector,
-				$location->getWorld(),
-				$yaw,
-				$pitch,
-				$roll
+			$roll = $info->getFloat('roll');
+			$roll = $roll < 0 ? mt_rand(0, 3600) / 10 : $roll;
+
+			$this->api->sendParticle(
+				$info->getString('name'),
+				EulerAngle::fromObject(
+					$centerVector,
+					$location->getWorld(),
+					$yaw,
+					$pitch,
+					$roll
+				),
+				new CustomParticle(
+					$info->getFloat('size'),
+					$info->getFloat('life'),
+					new Vector3(
+						$info->getFloat('motion_x'),
+						$info->getFloat('motion_y'),
+						$info->getFloat('motion_z')
+					),
+					$info->getFloat('speed'),
+					$info->getFloat('accele')
+				),
+				unit: $info->getFloat('unit')
 			);
-			$custom_particle = new CustomParticle(0.05, 10, new Vector3(0, 0, 0), 0, 0);
-			$this->api->sendParticle($name, $center, $custom_particle);
 			$player->sendPopup('§l§b' . round($yaw, 3) . ' §f: §c' . round($pitch, 3) . ' §f: §a' . round($roll, 3));
 		}, EventPriority::LOWEST, $this);
 	}

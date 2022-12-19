@@ -36,7 +36,7 @@ use skymin\ImageParticle\particle\ImageParticle;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
-final class AsyncSendParticle extends AsyncTask{
+class AsyncSendParticle extends AsyncTask{
 
 	private string $particle;
 

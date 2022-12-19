@@ -1,7 +1,7 @@
 name: ImageParticle
 main: skymin\ImageParticle\Loader
 src-namespace-prefix: skymin\ImageParticle
-version: 2.2.0
+version: 3.0.0-beta1
 author: skymin
 api:
   - 4.11.0
