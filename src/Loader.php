@@ -25,15 +25,18 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle;
 
-use pocketmine\entity\Location;
+use Closure;
 use pocketmine\event\EventPriority;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\math\Vector3;
-use skymin\ImageParticle\command\ImageParticleCmd;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
+use pocketmine\resourcepacks\ResourcePackManager;
+use pocketmine\resourcepacks\ZippedResourcePack;
 use pocketmine\utils\Config;
+use skymin\ImageParticle\command\ImageParticleCmd;
 use skymin\ImageParticle\particle\CustomParticle;
+use skymin\ImageParticle\particle\EulerAngle;
 use skymin\ImageParticle\particle\ImageParticleAPI;
 use skymin\ImageParticle\utils\ImageTypes;
 use Symfony\Component\Filesystem\Path;
@@ -42,10 +45,13 @@ use function is_dir;
 use function mkdir;
 use function mt_rand;
 use function round;
+use function strtolower;
 
 final class Loader extends PluginBase{
 
 	private const IMAGE_PATH = 'image';
+
+	private const PACK_NAME = 'CustomDust.mcpack';
 
 	private ImageParticleAPI $api;
 
@@ -61,6 +67,23 @@ final class Loader extends PluginBase{
 		if(!extension_loaded('gd')){
 			throw new PluginException('Missing GD library!');
 		}
+		$resourcePackManager = $this->getServer()->getResourcePackManager();
+		if(!$resourcePackManager->resourcePacksRequired()){
+			throw new PluginException('this plugin requires a resource pack');
+		}else{
+			$resource = $this->getResource(self::PACK_NAME);
+			$meta_data = stream_get_meta_data($resource);
+			$pack = new ZippedResourcePack($meta_data['uri']);
+			Closure::bind(
+				static function(ResourcePackManager $manager) use ($pack) : void{
+					$manager->resourcePacks[] = $pack;
+					$manager->uuidList[strtolower($pack->getPackId())] = $pack;
+				},
+				null,
+				ResourcePackManager::class
+			)($resourcePackManager);
+		}
+
 		$folder = $this->getDataFolder();
 		$imgPath = Path::join($folder, self::IMAGE_PATH);
 		if(!is_dir($imgPath)){
@@ -77,21 +100,24 @@ final class Loader extends PluginBase{
 		$server->getCommandMap()->register($this->getName(), new ImageParticleCmd($this));
 		$server->getPluginManager()->registerEvent(PlayerItemUseEvent::class, function(PlayerItemUseEvent $ev) : void{
 			$item = $ev->getItem();
-			if($this->api->isTestItem($item)){
-				$player = $ev->getPlayer();
-				$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
-				$location = $player->getLocation();
-				$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
-
-				$newLocation = Location::fromObject($centerVector, $location->getWorld(), $location->getYaw(), $location->getPitch());
-				$this->api->sendParticle($name, $newLocation, new CustomParticle(
-					0.05,
-					10,
-					new Vector3(0, 0.5, 0),
-					1,
-					0.001
-				));
-			}
+			if(!$this->api->isTestItem($item)) return;
+			$player = $ev->getPlayer();
+			$name = $item->getNamedTag()->getString(ImageParticleAPI::TEST_PARTICLE_TAG, '');
+			$location = $player->getLocation();
+			$centerVector = $location->addVector($player->getDirectionVector()->multiply(4));
+			$yaw = $location->getYaw();
+			$pitch = $location->getPitch();
+			$roll = mt_rand(0, 3600) / 10;
+			$center = EulerAngle::fromObject(
+				$centerVector,
+				$location->getWorld(),
+				$yaw,
+				$pitch,
+				$roll
+			);
+			$custom_particle = new CustomParticle(0.05, 10, new Vector3(0, 0, 0), 0, 0);
+			$this->api->sendParticle($name, $center, $custom_particle);
+			$player->sendPopup('§l§b' . round($yaw, 3) . ' §f: §c' . round($pitch, 3) . ' §f: §a' . round($roll, 3));
 		}, EventPriority::LOWEST, $this);
 	}
 }

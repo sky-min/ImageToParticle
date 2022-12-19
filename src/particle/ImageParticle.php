@@ -56,7 +56,7 @@ final class ImageParticle{
 	 * @phpstan-return Generator<LevelEventPacket>
 	 */
 
-	public function encode(Location $location, CustomParticle $customParticle, int $count = 0, float $unit = 0.1) : Generator{
+	public function encode(EulerAngle $euler, CustomParticle $customParticle, int $count = 0, float $unit = 0.1) : Generator{
 		if($count < 0){
 			throw new RangeException('A value greater than or equal to 0 should be obtained');
 		}
@@ -65,25 +65,30 @@ final class ImageParticle{
 		}
 		$p_count = 0;
 		$center = $euler->asVector3();
+		//yaw
 		$yaw = deg2rad($euler->getYaw());
-		$pitch = deg2rad($euler->getPitch());
-		$roll = deg2rad($euler->getRoll());
 		$ysin = sin($yaw);
 		$ycos = cos($yaw);
+		//pitch
+		$pitch = deg2rad($euler->getPitch());
 		$psin = sin($pitch);
 		$pcos = cos($pitch);
-		foreach($this->particles as $x => $yList){
-			foreach($yList as $y => $color){
-				if($count === 0 || $p_count++ % $count === 0){
-					$dx = $x / 10 * $unit;
-					$dy = $y / 10 * $unit;
-					$dz = $dy * $psin;
-					yield self::pk($center->add(
-						$dz * $ysin + $dx * $ycos,
-						$dy * -$pcos,
-						$dz * -$ycos + $dx * $ysin
-					), $customParticle->setColor($color));
-				}
+		//roll
+		$roll = deg2rad($euler->getRoll());
+		$rsin = sin($roll);
+		$rcos = cos($roll);
+		foreach($this->particles as $data){
+			if($count === 0 || $p_count++ % $count === 0){
+				$x = $data[1][0] * $unit;
+				$y = $data[1][1] * $unit;
+				$dx = $y * $rsin + $x * $rcos;
+				$dy = $y * $rcos - $x * $rsin;
+				$dz = $dy * $psin;
+				yield self::pk($center->add(
+					$dz * $ysin + $dx * $ycos,
+					$dy * -$pcos,
+					$dz * -$ycos + $dx * $ysin
+				), $customParticle->setColor($data[0][0], $data[0][1], $data[0][2]));
 			}
 		}
 	}

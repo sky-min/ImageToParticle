@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle\particle;
 
+use pocketmine\color\Color;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -142,7 +143,10 @@ final class ImageParticleAPI{
 				if($a < 50){
 					continue;
 				}
-				$data[(int)($x - $cx * 10)][(int)($y - $cy * 10)] = $colorat;
+				$color = Color::fromRGB($colorat);
+				$data[] = [
+					[$color->getR(), $color->getG(), $color->getB()],
+					[$x - $cx, $y - $cy]];
 			}
 		}
 		$this->particles[$name] = new ImageParticle($name, $data);
@@ -150,19 +154,18 @@ final class ImageParticleAPI{
 
 	public function sendParticle(
 		string $name,
-		Location $center,
+		EulerAngle $center,
 		CustomParticle $customParticle,
 		int $count = 0,
 		float $unit = 0.1,
-		//bool $asyncEncode = true
+		bool $asyncEncode = true
 	) : void{
 		$particle = $this->getParticle($name);
 		if($particle === null) return;
-		/*
 		if($asyncEncode){
-			$this->server->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $count, $unit));
+			$this->server->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $customParticle, $count, $unit));
 			return;
-		} */
+		}
 		$vec = $center->asVector3();
 		$target = $center->getWorld()->getViewersForPosition($vec);
 		if($target === []) return;

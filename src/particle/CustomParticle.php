@@ -6,7 +6,6 @@ namespace skymin\ImageParticle\particle;
 
 use InvalidArgumentException;
 use JsonSerializable;
-use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 
 final class CustomParticle implements JsonSerializable{
@@ -42,8 +41,9 @@ final class CustomParticle implements JsonSerializable{
 	private const LIFE_MAX = 1000;
 	private const LIFE_MIN = 0;
 
-	private int $colorCode = 0;
-	private Color $color;
+	private int $color_r = 0;
+	private int $color_g = 0;
+	private int $color_b = 0;
 
 	/**
 	 * @param float        $size   Greater than 0 and less than or equal to 100
@@ -72,14 +72,18 @@ final class CustomParticle implements JsonSerializable{
 		$this->checkAccele();
 		$this->checkSize();
 		$this->checkLife();
-		$this->color = new Color(0, 0, 0);
 	}
 
 
-	public function setColor(int $color) : self{
-		if($this->colorCode === $color) return $this;
-		$this->colorCode = $color;
-		$this->color = Color::fromRGB($color);
+	/**
+	 * @param int $r 0 ~ 255
+	 * @param int $g 0 ~ 255
+	 * @param int $b 0 ~ 255
+	 */
+	public function setColor(int $r, int $g, int $b) : self{
+		$this->color_r = $r;
+		$this->color_g = $g;
+		$this->color_b = $b;
 		return $this;
 	}
 
@@ -135,21 +139,21 @@ final class CustomParticle implements JsonSerializable{
 							'name' => '.r',
 							'value' => [
 								'type' => self::VAR_TYPE_FLOAT,
-								'value' => $this->color->getR() / self::RGB_MAX
+								'value' => $this->color_r / self::RGB_MAX
 							]
 						],
 						[
 							'name' => '.g',
 							'value' => [
 								'type' => self::VAR_TYPE_FLOAT,
-								'value' => $this->color->getG() / self::RGB_MAX
+								'value' => $this->color_g / self::RGB_MAX
 							]
 						],
 						[
 							'name' => '.b',
 							'value' => [
 								'type' => self::VAR_TYPE_FLOAT,
-								'value' => $this->color->getB() / self::RGB_MAX
+								'value' => $this->color_b / self::RGB_MAX
 							]
 						]
 					]
