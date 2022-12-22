@@ -3,10 +3,11 @@
 - [x] yaw pitch equal to entity yaw pitch
 
 # how to use
-1. this plugin load
-2. image file put at plugin_data/ImageParticle/image/
-3. Enter a file name at plugin_data/ImageParticle/Images.yml
-4. server reboot
+1. In resource_packages.yml, change force_resources to true.
+2. this plugin load
+3. image file put at plugin_data/ImageParticle/image/
+4. Enter a file name at plugin_data/ImageParticle/Images.yml
+5. server reboot
 
 [plugin_data example](https://github.com/sky-min/ImageToParticle/tree/master/example)
 
