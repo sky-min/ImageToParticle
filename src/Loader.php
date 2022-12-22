@@ -53,6 +53,7 @@ final class Loader extends PluginBase{
 	private const IMAGE_PATH = 'image';
 
 	private const PACK_NAME = 'CustomDust.mcpack';
+	private const PACK_UUID = 'f45648d-99f6-3768-8397-3690e77ea0e2';
 
 	private ImageParticleAPI $api;
 
@@ -71,7 +72,7 @@ final class Loader extends PluginBase{
 		$resourcePackManager = $this->getServer()->getResourcePackManager();
 		if(!$resourcePackManager->resourcePacksRequired()){
 			throw new PluginException('this plugin requires a resource pack');
-		}else{
+		}elseif($resourcePackManager->getPackById(self::PACK_UUID) === null){
 			$resource = $this->getResource(self::PACK_NAME);
 			$meta_data = stream_get_meta_data($resource);
 			$pack = new ZippedResourcePack($meta_data['uri']);
