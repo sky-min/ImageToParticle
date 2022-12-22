@@ -47,15 +47,5 @@ final class ImageParticleCmd extends Command implements PluginOwned{
 			return;
 		}
 		$sender->sendForm(new ListForm());
-//		if(!isset($args[0])){
-//			$sender->sendMessage($this->usageMessage);
-//			return;
-//		}
-//		$api = $this->owningPlugin->getApi();
-//		if(!$api->existsParticle($args[0])){
-//			$sender->sendMessage($args[0] . 'is an unregistered image');
-//			return;
-//		}
-//		$sender->getInventory()->addItem($api->createTestItem($args[0]));
 	}
 }
