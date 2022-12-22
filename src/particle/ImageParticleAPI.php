@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle\particle;
 
+use pocketmine\color\Color;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -74,15 +75,37 @@ final class ImageParticleAPI{
 	public function isTestItem(Item $item) : bool{
 		if($item instanceof FishingRod
 			&& $item->getCustomName() === $this->testItem->getCustomName()
-			&& $item->getNamedTag()->getString(self::TEST_PARTICLE_TAG, '') !== ''
+			&& $item->getNamedTag()->getTag(self::TEST_PARTICLE_TAG) !== null
 		) return true;
 		return false;
 	}
 
-	public function createTestItem(string $name) : Item{
+	public function createTestItem(
+		string $name,
+		float $unit,
+		float $size,
+		float $life,
+		float $motion_x,
+		float $motion_y,
+		float $motion_z,
+		float $speed,
+		float $accele,
+		float $roll
+	) : Item{
 		$oldNbt = $this->testItem->getNamedTag();
 		return $this->testItem
-			->setNamedTag($oldNbt->setString(self::TEST_PARTICLE_TAG, $name))
+			->setNamedTag($oldNbt->setTag(self::TEST_PARTICLE_TAG, CompoundTag::create()
+				->setString('name', $name)
+				->setFloat('unit', $unit)
+				->setFloat('size', $size)
+				->setFloat('life', $life)
+				->setFloat('motion_x', $motion_x)
+				->setFloat('motion_y', $motion_y)
+				->setFloat('motion_z', $motion_z)
+				->setFloat('speed', $speed)
+				->setFloat('accele', $accele)
+				->setFloat('roll', $roll))
+			)
 			->setLore(['§ctest image§r: ' . $name]);
 	}
 
@@ -100,6 +123,11 @@ final class ImageParticleAPI{
 	 */
 	public function getParticles() : array{
 		return $this->particles;
+	}
+
+	/** @return string[] */
+	public function getParticleList() : array{
+		return array_keys($this->particles);
 	}
 
 	public function registerImage(
@@ -142,10 +170,10 @@ final class ImageParticleAPI{
 				if($a < 50){
 					continue;
 				}
+				$color = Color::fromRGB($colorat);
 				$data[] = [
-					'c' => $colorat,
-					'p' => [$x - $cx, $y - $cy]
-				];
+					[$color->getR(), $color->getG(), $color->getB()],
+					[$x - $cx, $y - $cy]];
 			}
 		}
 		$this->particles[$name] = new ImageParticle($name, $data);
@@ -154,21 +182,22 @@ final class ImageParticleAPI{
 	public function sendParticle(
 		string $name,
 		EulerAngle $center,
-		int $count = 1,
-		float $unit = 0.05,
+		CustomParticle $customParticle,
+		int $count = 0,
+		float $unit = 0.1,
 		bool $asyncEncode = true
 	) : void{
 		$particle = $this->getParticle($name);
 		if($particle === null) return;
 		if($asyncEncode){
-			$this->server->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $count, $unit));
+			$this->server->getAsyncPool()->submitTask(new AsyncSendParticle($particle, $center, $customParticle, $count, $unit));
 			return;
 		}
 		$vec = $center->asVector3();
 		$target = $center->getWorld()->getViewersForPosition($vec);
 		if($target === []) return;
 		$pks = [];
-		foreach($particle->encode($center, $count, $unit) as $particlePk){
+		foreach($particle->encode($center, $customParticle, $count, $unit) as $particlePk){
 			$pks[] = $particlePk;
 		}
 		$this->server->broadcastPackets($target, $pks);

@@ -30,16 +30,19 @@ use pocketmine\math\Vector3;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\world\World;
+use skymin\ImageParticle\particle\CustomParticle;
 use skymin\ImageParticle\particle\EulerAngle;
 use skymin\ImageParticle\particle\ImageParticle;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
-final class AsyncSendParticle extends AsyncTask{
+class AsyncSendParticle extends AsyncTask{
 
 	private string $particle;
 
 	private string $center;
+
+	private string $custom;
 
 	private float $yaw;
 
@@ -50,6 +53,7 @@ final class AsyncSendParticle extends AsyncTask{
 	public function __construct(
 		ImageParticle $particle,
 		EulerAngle $center,
+		CustomParticle $custom,
 		private int $count,
 		private float $unit
 	){
@@ -59,6 +63,7 @@ final class AsyncSendParticle extends AsyncTask{
 		$this->storeLocal('world', $center->world);
 		$this->particle = igbinary_serialize($particle);
 		$this->center = igbinary_serialize($center->asVector3());
+		$this->custom = igbinary_serialize($custom);
 	}
 
 	public function onRun() : void{
@@ -66,9 +71,12 @@ final class AsyncSendParticle extends AsyncTask{
 		$particle = igbinary_unserialize($this->particle);
 		/** @var Vector3 $center */
 		$center = igbinary_unserialize($this->center);
+		/** @var CustomParticle $custom */
+		$custom = igbinary_unserialize($this->custom);
 		$result = [];
 		foreach($particle->encode(
 			EulerAngle::fromObject($center, null, $this->yaw, $this->pitch, $this->roll),
+			$custom,
 			$this->count,
 			$this->unit
 		) as $pk){

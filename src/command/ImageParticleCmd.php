@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace skymin\ImageParticle\command;
 
+use skymin\ImageParticle\form\ListForm;
 use skymin\ImageParticle\Loader;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -45,15 +46,16 @@ final class ImageParticleCmd extends Command implements PluginOwned{
 		if(!$sender instanceof Player || !$this->testPermission($sender)){
 			return;
 		}
-		if(!isset($args[0])){
-			$sender->sendMessage($this->usageMessage);
-			return;
-		}
-		$api = $this->owningPlugin->getApi();
-		if(!$api->existsParticle($args[0])){
-			$sender->sendMessage($args[0] . 'is an unregistered image');
-			return;
-		}
-		$sender->getInventory()->addItem($api->createTestItem($args[0]));
+		$sender->sendForm(new ListForm());
+//		if(!isset($args[0])){
+//			$sender->sendMessage($this->usageMessage);
+//			return;
+//		}
+//		$api = $this->owningPlugin->getApi();
+//		if(!$api->existsParticle($args[0])){
+//			$sender->sendMessage($args[0] . 'is an unregistered image');
+//			return;
+//		}
+//		$sender->getInventory()->addItem($api->createTestItem($args[0]));
 	}
 }
