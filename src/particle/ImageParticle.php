@@ -55,7 +55,6 @@ final class ImageParticle{
 	 * @return Generator
 	 * @phpstan-return Generator<LevelEventPacket>
 	 */
-
 	public function encode(EulerAngle $euler, CustomParticle $customParticle, int $count = 0, float $unit = 0.1) : Generator{
 		if($count < 0){
 			throw new RangeException('A value greater than or equal to 0 should be obtained');
