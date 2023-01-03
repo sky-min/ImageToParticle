@@ -38,7 +38,7 @@ final class CreateTestItemForm implements Form{
 	private const D_ACCELE = 0;
 	private const D_ROLL = -1;
 
-	public function __construct(private string $particleName){ }
+	public function __construct(private readonly string $particleName){ }
 
 	public function jsonSerialize() : array{
 		return [

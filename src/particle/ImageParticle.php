@@ -43,8 +43,8 @@ final class ImageParticle{
 	 * @param int[][] $particles
 	 */
 	public function __construct(
-		private string $name,
-		private array $particles
+		private readonly string $name,
+		private readonly array $particles
 	){}
 
 	public function getName() : string{

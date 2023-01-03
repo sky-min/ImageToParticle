@@ -65,6 +65,8 @@ final class CustomParticle implements JsonSerializable{
 	private int $color_g = 0;
 	private int $color_b = 0;
 
+	private readonly Vector3 $motion;
+
 	/**
 	 * @param float        $size   0 < $size <= 100
 	 * @param float        $life   0 < 1000 <= 1000
@@ -76,17 +78,15 @@ final class CustomParticle implements JsonSerializable{
 	 */
 	public function __construct(
 		// shape
-		private float $size = 0.075,
+		private readonly float $size = 0.075,
 		// life
-		private float $life = 10,
+		private readonly float $life = 10,
 		// motion
-		private ?Vector3 $motion = null,
-		private float $speed = 0.0,
-		private float $accele = 0.0
+		Vector3 $motion = null,
+		private readonly float $speed = 0.0,
+		private readonly float $accele = 0.0
 	){
-		if($this->motion === null){
-			$this->motion = new Vector3(0, 0, 0);
-		}
+		$this->motion = $motion ?? new Vector3(0, 0, 0);
 		$this->checkVector();
 		$this->checkSpeed();
 		$this->checkAccele();

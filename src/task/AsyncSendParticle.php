@@ -54,8 +54,8 @@ class AsyncSendParticle extends AsyncTask{
 		ImageParticle $particle,
 		EulerAngle $center,
 		CustomParticle $custom,
-		private int $count,
-		private float $unit
+		private readonly int $count,
+		private readonly float $unit
 	){
 		$this->yaw = $center->getYaw();
 		$this->pitch = $center->getPitch();
